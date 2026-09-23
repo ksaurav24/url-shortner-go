@@ -13,10 +13,14 @@ import (
 func main() {
 
 	cfg := config.MustLoad()
-	db.Connect(cfg.DatabaseURL)
+	db, db_err := db.Connect(cfg.DatabaseURL)
+	if db_err != nil {
+		log.Fatalf("Failed to connect DB: %v", db_err)
+	}
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /healthz", handlers.Healthz)
+	mux.HandleFunc("GET /url", handlers.GetUrls(db))
 
 	server := &http.Server{
 		Addr:         ":" + cfg.Port,
