@@ -5,16 +5,21 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 )
 
 type URL struct {
-	ID        string  `json:"id"`
-	LongURL   string  `json:"longUrl"`
-	CreatedAt string  `json:"createdAt"`
-	ExpiresAt *string `json:"expiresAt"`
-	Status    string  `json:"status"`
+	ID        string    `json:"id"`
+	LongURL   string    `json:"longUrl"`
+	CreatedAt time.Time `json:"createdAt"`
+	ExpiresAt *string   `json:"expiresAt"`
+	Status    string    `json:"status"`
 }
 
+// GetUrls retrieves the latest URLs.
+//
+// The returned handler queries the database and returns
+// the results as JSON.
 func GetUrls(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
