@@ -9,11 +9,11 @@ import (
 )
 
 type URL struct {
-	ID        string    `json:"id"`
-	LongURL   string    `json:"longUrl"`
-	CreatedAt time.Time `json:"createdAt"`
-	ExpiresAt *string   `json:"expiresAt"`
-	Status    string    `json:"status"`
+	ID        string     `json:"id"`
+	LongURL   string     `json:"longUrl"`
+	CreatedAt time.Time  `json:"createdAt"`
+	ExpiresAt *time.Time `json:"expiresAt"`
+	Status    string     `json:"status"`
 }
 
 // urlsHandler struct
