@@ -19,8 +19,10 @@ func main() {
 	}
 	mux := http.NewServeMux()
 
+	uh := handlers.NewUrlHandler(db)
+
 	mux.HandleFunc("GET /healthz", handlers.Healthz)
-	mux.HandleFunc("GET /url", handlers.GetUrls(db))
+	mux.HandleFunc("GET /url", uh.GetUrls)
 
 	server := &http.Server{
 		Addr:         ":" + cfg.Port,
