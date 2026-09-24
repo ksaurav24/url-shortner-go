@@ -2,7 +2,9 @@ package main
 
 import (
 	"log"
+	"log/slog"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/ksaurav24/url-shortner-go/internal/config"
@@ -19,7 +21,14 @@ func main() {
 	}
 	mux := http.NewServeMux()
 
-	uh := handlers.NewUrlHandler(db)
+	logHandler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		AddSource: true,
+		Level:     slog.LevelDebug,
+	})
+
+	logger := slog.New(logHandler)
+
+	uh := handlers.NewUrlHandler(db, logger)
 
 	mux.HandleFunc("GET /healthz", handlers.Healthz)
 	mux.HandleFunc("GET /url", uh.GetUrls)
@@ -33,9 +42,8 @@ func main() {
 	}
 
 	log.Printf("Starting the server")
-	err := server.ListenAndServe()
 
-	if err != nil {
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatalf("Failed to start the server. Error: %v", err)
 	}
 }

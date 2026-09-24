@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"log"
+	"log/slog"
 	"net/http"
 	"time"
 )
@@ -18,12 +19,14 @@ type URL struct {
 
 // urlsHandler struct
 type UrlHandler struct {
-	db *sql.DB
+	db     *sql.DB
+	logger *slog.Logger
 }
 
-func NewUrlHandler(db *sql.DB) *UrlHandler {
+func NewUrlHandler(db *sql.DB, logger *slog.Logger) *UrlHandler {
 	return &UrlHandler{
-		db: db,
+		db:     db,
+		logger: logger,
 	}
 }
 
@@ -42,7 +45,7 @@ func (uh UrlHandler) GetUrls(w http.ResponseWriter, r *http.Request) {
 		`)
 
 	if err != nil {
-		log.Printf("DB Query Error: %v", err)
+		uh.logger.Error("Database query failure", "err", err)
 		http.Error(w, "Failed to retrieve urls", http.StatusInternalServerError)
 		return
 	}
@@ -61,7 +64,7 @@ func (uh UrlHandler) GetUrls(w http.ResponseWriter, r *http.Request) {
 			&u.Status,
 		)
 		if err != nil {
-			log.Printf("Failed to scan the rows: %v", err)
+			uh.logger.Error("rows scan failure", "err", err)
 			http.Error(w, "Failed to retrieve the urls", http.StatusInternalServerError)
 			return
 		}
@@ -72,7 +75,7 @@ func (uh UrlHandler) GetUrls(w http.ResponseWriter, r *http.Request) {
 	log.Println(urls)
 
 	if err := rows.Err(); err != nil {
-		log.Printf("rows.err: %v", err)
+		uh.logger.Error("rows.err", "err", err)
 		http.Error(w, "Failed to retrieve urls", http.StatusInternalServerError)
 		return
 	}
